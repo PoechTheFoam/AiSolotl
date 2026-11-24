@@ -128,19 +128,22 @@ def summarize(conversations,ref_time):
             media=message.get("media")
             if media:
                 media_type=media.get("type")
-                if media_type=="stickers":
+                if media_type=="sticker":
                     input_fragments.append({
                         "type":"image",
                         "uri":media.get("url")
                     })
                 if media_type=="image":
-                    input_fragments.append({
-                        "type":"image",
-                        "uri":media.get("url")
-                    })
-                if media_type=="file/attachments":
+                    url = media.get("url")
+                    if isinstance(url, str) and url.strip():
+                        input_fragments.append({
+                            "type": "image",
+                            "uri": url
+                        })                    
+                if media_type=="file/attachment":
                     # fix this case to handle mime_type
-                    mimetype, _=mimetypes.guess_type(media.get("name",""))
+                    model_type=None
+                    mimetype, _=mimetypes.guess_type(media.get("name","").strip('"'))
                     if mimetype:
                         if mimetype.startswith("audio/"):
                             model_type = "audio"
